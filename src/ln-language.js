@@ -1,49 +1,60 @@
-// Registro da linguagem LN no Monaco
+// ============================================================
+// 1. Registrar Linguagem LN
+// ============================================================
 monaco.languages.register({ id: "lnscript" });
 
-// Configuração de tokens
+// ============================================================
+// 2. Tokenizer LN (Monarch)
+// ============================================================
 monaco.languages.setMonarchTokensProvider("lnscript", {
+    keywords: [
+        "function","select","selectdo","endselect","from","where","order","by",
+        "and","or","if","then","else","endif","continue","extern","domain",
+        "table","group","choice","on.choice","execute","inrange",
+        "rprt_open","rprt_close","rprt_send","when.field.changes",
+        "get.screen.defaults"
+    ],
+
+    operators: ["=", ">", "<", ">=", "<=", "<>", "between"],
+
     tokenizer: {
         root: [
+            [/\b\d+(\.\d+)?\b/, "number"],
 
             // Comentários
             [/\|.*/, "comment"],
 
-            // Palavras-chave LN
-            [
-                /\b(function|select|selectdo|endselect|if|then|else|endif|continue|from|where|order|by|and|or|inrange|execute|extern|domain|table|group|choice|on\.choice|when\.field\.changes|get\.screen\.defaults)\b/,
-                "keyword"
-            ],
+            // Keywords
+            [/\b(function|select|selectdo|endselect|from|where|order|by|and|or|if|then|else|endif|continue|extern|domain|table|group|choice|execute|inrange|rprt_open|rprt_close|rprt_send)\b/, "keyword"],
 
-            // Números
-            [/\b\d+(\.\d+)?\b/, "number"],
+            // Variáveis LN (:variavel)
+            [/:([a-zA-Z_][\w.]*)/, "variable.predefined"],
+
+            // Campos com tabela — exemplo: tppdm600.cprj
+            [/([a-zA-Z_][\w]*)\./, "type.identifier"],
 
             // Strings
-            [/\".*?\"/, "string"],
+            [/".*?"/, "string"],
 
-            // Campos com tabela: tfacr201.reca
-            [/[a-zA-Z_][\w]*\.[a-zA-Z_][\w]*/, "field"],
-
-            // Variáveis LN (:var)
-            [/:([a-zA-Z_][\w]*)/, "variable"],
-
-            // Identificadores genéricos
+            // Identificadores
             [/[a-zA-Z_][\w]*/, "identifier"],
         ]
     }
 });
-// Tema escuro LN
-monaco.editor.defineTheme("ln-dark", {
-    base: "vs-dark",
-    inherit: true,
-    rules: [
-        { token: "comment",   foreground: "888888" },
-        { token: "keyword",   foreground: "00ccff", fontStyle: "bold" },
-        { token: "number",    foreground: "ffcf6e" },
-        { token: "string",    foreground: "9cdcfe" },
-        { token: "variable",  foreground: "ff7aaa" },
-        { token: "field",     foreground: "a3ffa3" },
-        { token: "identifier",foreground: "ffffff" }
+
+// ============================================================
+// 3. Configurações extras da linguagem
+// ============================================================
+monaco.languages.setLanguageConfiguration("lnscript", {
+    comments: {
+        lineComment: "|"
+    },
+    brackets: [
+        ["{", "}"],
+        ["(", ")"]
+    ],
+    autoClosingPairs: [
+        { open: "{", close: "}" },
+        { open: "(", close: ")" }
     ]
 });
-    
