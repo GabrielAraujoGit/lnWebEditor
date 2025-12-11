@@ -1,4 +1,55 @@
 {
     "tfacr201": ["reca", "amnt", "ninv", "recd"],
-    "tbtsli200": ["date", "tsta", "fire", "cfne"]
+    "tbtsli200": ["date", "tsta", "fire", "cfne"],
+
+    "ttxdii001": [
+        "ndii", "frat", "fire", "orno", "outr", "vadu",
+        "camb", "aipi", "bpid", "past", "reci", "afrm",
+        "vcmv", "quan"
+    ],
+
+    "ttxdii002": [
+        "item", "qana", "amnt", "frat", "aicm",
+        "vtot", "aliad", "vlad", "aipi", "vipi",
+        "apis", "vpis", "acof", "vcof", "vlcm"
+    ],
+
+    "ttccom100": ["nama"],
+
+    "tbtrec200": [
+        "fire", "docn", "date", "pstd",
+        "idat", "adat", "fids", "stat", "doty"
+    ],
+
+    "tbtrec201": [
+        "item", "qnty", "dsca", "unit"
+    ],
+
+    "tbtrec212": [
+        "ordn", "rcln", "rcno"
+    ],
+
+    "twhinh312": [
+        "ardt", "qrcr"
+    ],
+
+    "ttdpur401": [
+        "qoor", "pono"
+    ],
+
+    "tlpbra741": [
+        "avgr"
+    ],
+
+    "tppdm600": [
+        "cprj"
+    ],
+
+    "ttcmcs052": [],
+
+    "twhinr140": [
+        "cwar", "item", "qhnd", "loca"
+    ],
+
+    "ttxpdm067": []
 }
