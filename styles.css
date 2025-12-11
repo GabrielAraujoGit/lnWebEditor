@@ -1,0 +1,35 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    padding: 20px;
+    margin: 0;
+}
+
+
+
+#editor-container {
+    height: 85vh;
+    width: 100%;
+    border: 1px solid #333;
+}
+
+
+#editor {
+    width: 100%;
+    height: 80vh;
+    background: #1e1e1e;
+    color: #dcdcdc;
+    border: none;
+    resize: none;
+    padding: 15px;
+    font-family: Consolas, monospace;
+    font-size: 15px;
+    line-height: 1.4;
+    outline: none;
+}

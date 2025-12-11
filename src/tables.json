@@ -1,0 +1,4 @@
+{
+    "tfacr201": ["reca", "amnt", "ninv", "recd"],
+    "tbtsli200": ["date", "tsta", "fire", "cfne"]
+}
