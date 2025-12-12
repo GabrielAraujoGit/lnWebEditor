@@ -211,26 +211,30 @@ header {
     overflow-wrap: break-word;
 }
 
-
-
-.message-body.syntax {
-    border-left: 4px solid var(--error);
-    background: rgba(239, 68, 68, 0.1);
+.message-body h3 {
+    margin: 16px 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.message-body.missing {
-    border-left: 4px solid var(--warning);
-    background: rgba(245, 158, 11, 0.1);
+.message-body h3:first-child {
+    margin-top: 0;
 }
 
-.message-body.structure {
-    border-left: 4px solid var(--info);
-    background: rgba(59, 130, 246, 0.1);
+.message-body ul, .message-body ol {
+    margin: 8px 0 8px 20px;
 }
 
-.message-body.recommendation {
-    border-left: 4px solid var(--success);
-    background: rgba(16, 185, 129, 0.1);
+.message-body li {
+    margin: 4px 0;
+}
+
+.message-body p {
+    margin: 8px 0;
 }
 
 .message-body pre {
@@ -245,6 +249,58 @@ header {
 .message-body code {
     font-family: 'Fira Code', 'Consolas', monospace;
     font-size: 13px;
+}
+
+.message-body .error-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--error);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.message-body .warning-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--warning);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.message-body .success-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.message-body .info-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(59, 130, 246, 0.2);
+    color: var(--info);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 8px;
 }
 
 .message-actions {
@@ -642,6 +698,7 @@ header {
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.js"></script>
 <script>
+// Configuração do Prism para linguagem LN
 Prism.languages.ln = {
     'keyword': /\b(function|select|from|where|endselect|if|then|else|endif|continue|return)\b/g,
     'number': /\b\d+(\.\d+)?\b/g,
@@ -654,7 +711,7 @@ const btn = document.getElementById('sendBtn');
 const scriptEl = document.getElementById('script');
 let messageCount = 0;
 
-// Initialize lucide icons
+// Inicializar ícones lucide
 lucide.createIcons();
 
 // Auto-resize textarea
@@ -723,7 +780,7 @@ function getTimeString() {
 function createTypingIndicator() {
     removeWelcome();
     const wrapper = document.createElement('div');
-    wrapper.className = 'message-wrapper';
+    wrapper.className = 'message-wrapper typing';
     wrapper.innerHTML = `
         <div class="message-avatar bot-avatar">
             <i data-lucide="bot" width="18" height="18" stroke="white"></i>
@@ -777,49 +834,41 @@ function appendBotMessage(text) {
     setTimeout(() => {
         chat.removeChild(typingDiv);
         
-        const sections = text.split('\n\n').filter(s => s.trim());
-        sections.forEach((section, index) => {
-            setTimeout(() => {
-                let cssClass = '';
-                const lower = section.toLowerCase();
-                if (lower.includes('erro') || lower.includes('syntax')) cssClass = 'syntax';
-                else if (lower.includes('campo inexistente') || lower.includes('missing')) cssClass = 'missing';
-                else if (lower.includes('estrutura')) cssClass = 'structure';
-                else if (lower.includes('recomenda')) cssClass = 'recommendation';
-                
-                const wrapper = document.createElement('div');
-                wrapper.className = 'message-wrapper';
-                const parsedContent = marked.parse(section);
-                
-                wrapper.innerHTML = `
-                    <div class="message-avatar bot-avatar">
-                        <i data-lucide="bot" width="18" height="18" stroke="white"></i>
-                    </div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <span class="message-author">LN Validator</span>
-                            <span class="message-time">${getTimeString()}</span>
-                        </div>
-                        <div class="message-body ${cssClass}">${parsedContent}</div>
-                        <div class="message-actions">
-                            <button class="action-btn" onclick="copyMessage(this)">
-                                <i data-lucide="copy" width="14" height="14"></i>
-                                Copiar
-                            </button>
-                            ${cssClass ? `<button class="action-btn" onclick="explainMore(this)">
-                                <i data-lucide="lightbulb" width="14" height="14"></i>
-                                Explicar mais
-                            </button>` : ''}
-                        </div>
-                    </div>
-                `;
-                
-                chat.appendChild(wrapper);
-                chat.scrollTop = chat.scrollHeight;
-                Prism.highlightAllUnder(wrapper);
-                lucide.createIcons();
-            }, index * 300);
-        });
+        const wrapper = document.createElement('div');
+        wrapper.className = 'message-wrapper bot';
+        
+        // Processar o markdown e manter formatação
+        const parsedContent = marked.parse(text);
+        
+        wrapper.innerHTML = `
+            <div class="message-avatar bot-avatar">
+                <i data-lucide="bot" width="18" height="18" stroke="white"></i>
+            </div>
+            <div class="message-content">
+                <div class="message-header">
+                    <span class="message-author">LN Validator</span>
+                    <span class="message-time">${getTimeString()}</span>
+                </div>
+                <div class="message-body">${parsedContent}</div>
+                <div class="message-actions">
+                    <button class="action-btn" onclick="copyMessage(this)">
+                        <i data-lucide="copy" width="14" height="14"></i>
+                        Copiar
+                    </button>
+                    <button class="action-btn" onclick="explainMore(this)">
+                        <i data-lucide="lightbulb" width="14" height="14"></i>
+                        Explicar mais
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        chat.appendChild(wrapper);
+        chat.scrollTop = chat.scrollHeight;
+        
+        // Aplicar syntax highlighting em todos os blocos de código
+        Prism.highlightAllUnder(wrapper);
+        lucide.createIcons();
     }, 1000);
 }
 
@@ -870,18 +919,25 @@ async function sendScript() {
             body: JSON.stringify({ script })
         });
         
-        if (!response.ok) throw new Error(`Erro na requisição: ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`Erro ${response.status}: ${response.statusText}`);
+        }
         
         const data = await response.json();
+        
+        // Mensagem única consolidada com toda a análise
         appendBotMessage(data.analysis);
+        
     } catch (err) {
-        appendBotMessage(`❌ **Erro de Conexão**\n\nNão foi possível conectar ao servidor: ${err.message}\n\nVerifique se o servidor está rodando em http://127.0.0.1:8000`);
+        console.error('Erro na requisição:', err);
+        appendBotMessage(`### ❌ Erro de Conexão\n\nNão foi possível conectar ao servidor de análise.\n\n**Detalhes do erro:** ${err.message}\n\n**Verificações necessárias:**\n- Confirme se o servidor está em execução\n- Verifique se o endereço está correto: \`http://127.0.0.1:8000\`\n- Certifique-se de que não há firewall bloqueando a conexão`);
     } finally {
         btn.disabled = false;
         scriptEl.focus();
     }
 }
 
+// Event listeners
 scriptEl.addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -890,6 +946,8 @@ scriptEl.addEventListener('keydown', e => {
 });
 
 btn.addEventListener('click', sendScript);
+
+// Focar no input ao carregar
 scriptEl.focus();
 </script>
 
