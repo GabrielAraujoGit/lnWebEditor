@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LN Validator Chat</title>
+<title>LNLint Chat</title>
 <link href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism-tomorrow.css" rel="stylesheet" />
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
@@ -14,20 +14,31 @@
 }
 
 :root {
+    /* Brand */
     --primary: #2563eb;
     --primary-hover: #1d4ed8;
-    --bg-main: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-chat: #0f172a;
+    --secondary: #64748b;
+    --accent: #38bdf8;
+
+    /* Backgrounds */
+    --bg-main: #020617;
+    --bg-secondary: #020617;
+    --bg-chat: #020617;
+    --bg-bot: #0f172a;
     --bg-user: #2563eb;
-    --bg-bot: #1e293b;
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --border: #334155;
-    --success: #10b981;
-    --warning: #f59e0b;
+
+    /* Text */
+    --text-primary: #f8fafc;
+    --text-secondary: #a1acc2;
+
+    /* UI */
+    --border: #1e293b;
+
+    /* States */
+    --success: #22c55e;
+    --warning: #facc15;
     --error: #ef4444;
-    --info: #3b82f6;
+    --info: #38bdf8;
 }
 
 body {
@@ -251,56 +262,205 @@ header {
     font-size: 13px;
 }
 
-.message-body .error-badge {
+/* Analysis Summary - Item 2 do Backlog */
+.analysis-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.summary-item {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(239, 68, 68, 0.2);
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.summary-item.error {
+    background: rgba(239, 68, 68, 0.15);
     color: var(--error);
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-right: 8px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
-.message-body .warning-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(245, 158, 11, 0.2);
+.summary-item.warning {
+    background: rgba(250, 204, 21, 0.15);
     color: var(--warning);
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-right: 8px;
+    border: 1px solid rgba(250, 204, 21, 0.3);
 }
 
-.message-body .success-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(16, 185, 129, 0.2);
-    color: var(--success);
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-right: 8px;
-}
-
-.message-body .info-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(59, 130, 246, 0.2);
+.summary-item.info {
+    background: rgba(56, 189, 248, 0.15);
     color: var(--info);
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 12px;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.summary-item.success {
+    background: rgba(34, 197, 94, 0.15);
+    color: var(--success);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.summary-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Analysis Sections - Item 1 do Backlog (Semântica Visual) */
+.analysis-section {
+    margin: 16px 0;
+    border-left: 3px solid var(--border);
+    padding-left: 16px;
+}
+
+.analysis-section.syntax-error {
+    border-left-color: var(--error);
+}
+
+.analysis-section.structural-warning {
+    border-left-color: var(--warning);
+}
+
+.analysis-section.improvement {
+    border-left-color: var(--info);
+}
+
+.analysis-section.optimization {
+    border-left-color: var(--success);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
     font-weight: 600;
-    margin-right: 8px;
+    font-size: 16px;
+}
+
+.issue-item {
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin: 10px 0;
+    transition: all 0.2s;
+}
+
+.issue-item:hover {
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+.issue-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.issue-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+.issue-line {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(37, 99, 235, 0.2);
+    color: var(--info);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Fira Code', monospace;
+}
+
+.issue-message {
+    flex: 1;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* Item 7 do Backlog - Code Blocks com Contexto */
+.issue-code {
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    overflow-x: auto;
+    position: relative;
+}
+
+.issue-code.error-code {
+    border-left: 3px solid var(--error);
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.issue-code.warning-code {
+    border-left: 3px solid var(--warning);
+    background: rgba(250, 204, 21, 0.05);
+}
+
+.issue-code.suggestion-code {
+    border-left: 3px solid var(--info);
+    background: rgba(56, 189, 248, 0.05);
+}
+
+.issue-code.optimized-code {
+    border-left: 3px solid var(--success);
+    background: rgba(34, 197, 94, 0.05);
+}
+
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 16px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 8px;
+    color: var(--success);
+    font-size: 14px;
+    margin: 12px 0;
+}
+
+/* Chat alignment */
+.message-wrapper.user {
+    flex-direction: row-reverse;
+}
+
+.message-wrapper.user .message-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.message-wrapper.user .message-header {
+    flex-direction: row-reverse;
+}
+
+.message-wrapper.user .message-body {
+    background: var(--bg-user);
+    border-radius: 12px 12px 4px 12px;
+}
+
+.message-wrapper.bot .message-body {
+    border-radius: 12px 12px 12px 4px;
 }
 
 .message-actions {
@@ -634,7 +794,7 @@ header {
         <div class="header-left">
             <div class="logo">LN</div>
             <div class="header-title">
-                <h1>LN Validator</h1>
+                <h1>LNLint</h1>
                 <div class="header-subtitle">Validador Inteligente de Scripts LN</div>
             </div>
         </div>
@@ -653,7 +813,7 @@ header {
             <div class="welcome-icon">
                 <i data-lucide="bot" width="40" height="40" stroke="white"></i>
             </div>
-            <h2>Olá! Sou o LN Validator</h2>
+            <h2>Olá! Sou o LNLint</h2>
             <p>Envie seu script LN e receba análises detalhadas sobre sintaxe, estrutura e recomendações de melhoria.</p>
             
             <div class="suggestions">
@@ -726,7 +886,7 @@ function clearChat() {
             <div class="welcome-icon">
                 <i data-lucide="bot" width="40" height="40" stroke="white"></i>
             </div>
-            <h2>Olá! Sou o LN Validator</h2>
+            <h2>Olá! Sou o LNLint</h2>
             <p>Envie seu script LN e receba análises detalhadas sobre sintaxe, estrutura e recomendações de melhoria.</p>
             
             <div class="suggestions">
@@ -787,7 +947,7 @@ function createTypingIndicator() {
         </div>
         <div class="message-content">
             <div class="message-header">
-                <span class="message-author">LN Validator</span>
+                <span class="message-author">LNLint</span>
                 <span class="message-time">${getTimeString()}</span>
             </div>
             <div class="message-body">
@@ -828,6 +988,125 @@ function appendUserMessage(text) {
     lucide.createIcons();
 }
 
+// Criar exemplo de resposta estruturada com as novas classes
+function createExampleAnalysis() {
+    const exampleHTML = `
+        <!-- Resumo Visual - Item 2 do Backlog -->
+        <div class="analysis-summary">
+            <span class="summary-item error">
+                <i data-lucide="x-circle" width="16" height="16"></i>
+                1 erro sintático
+            </span>
+            <span class="summary-item warning">
+                <i data-lucide="alert-triangle" width="16" height="16"></i>
+                2 avisos estruturais
+            </span>
+            <span class="summary-item info">
+                <i data-lucide="sparkles" width="16" height="16"></i>
+                3 melhorias sugeridas
+            </span>
+            <span class="summary-item success">
+                <i data-lucide="trending-up" width="16" height="16"></i>
+                1 otimização possível
+            </span>
+        </div>
+
+        <!-- Seção de Erros - Item 1 do Backlog -->
+        <div class="analysis-section syntax-error">
+            <div class="section-header">
+                <i data-lucide="x-circle" width="20" height="20"></i>
+                Erros Sintáticos
+            </div>
+            
+            <div class="issue-item">
+                <div class="issue-header">
+                    <span class="issue-line">Linha 3</span>
+                    <div class="issue-title">Falta palavra-chave 'endselect'</div>
+                </div>
+                <div class="issue-message">
+                    O bloco SELECT não foi finalizado corretamente. Cada instrução SELECT deve ter um ENDSELECT correspondente para delimitar o escopo da consulta.
+                </div>
+                <div class="issue-code error-code">
+                    <code>function teste
+  select * from tabela
+  // Falta 'endselect' aqui</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Avisos -->
+        <div class="analysis-section structural-warning">
+            <div class="section-header">
+                <i data-lucide="alert-triangle" width="20" height="20"></i>
+                Avisos Estruturais
+            </div>
+            
+            <div class="issue-item">
+                <div class="issue-header">
+                    <span class="issue-line">Linha 2</span>
+                    <div class="issue-title">Uso de SELECT * não recomendado</div>
+                </div>
+                <div class="issue-message">
+                    O uso de SELECT * pode impactar a performance e dificultar a manutenção. É recomendado especificar explicitamente os campos necessários.
+                </div>
+                <div class="issue-code warning-code">
+                    <code>select * from tabela  // Evite usar *</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Melhorias -->
+        <div class="analysis-section improvement">
+            <div class="section-header">
+                <i data-lucide="sparkles" width="20" height="20"></i>
+                Sugestões de Melhoria
+            </div>
+            
+            <div class="issue-item">
+                <div class="issue-header">
+                    <span class="issue-line">Linha 1</span>
+                    <div class="issue-title">Adicionar comentário descritivo</div>
+                </div>
+                <div class="issue-message">
+                    Documentar o propósito da função melhora a legibilidade e facilita a manutenção do código.
+                </div>
+                <div class="issue-code suggestion-code">
+                    <code>| Descrição da função
+function teste</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Otimizações -->
+        <div class="analysis-section optimization">
+            <div class="section-header">
+                <i data-lucide="trending-up" width="20" height="20"></i>
+                Oportunidades de Otimização
+            </div>
+            
+            <div class="issue-item">
+                <div class="issue-header">
+                    <span class="issue-line">Linha 2</span>
+                    <div class="issue-title">Adicionar índice na consulta</div>
+                </div>
+                <div class="issue-message">
+                    Adicionar uma cláusula WHERE com filtros reduz o volume de dados processados e melhora significativamente a performance.
+                </div>
+                <div class="issue-code optimized-code">
+                    <code>select campo1, campo2 from tabela
+where status = 'ativo'</code>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-indicator">
+            <i data-lucide="check-circle" width="18" height="18"></i>
+            Análise concluída com 7 observações
+        </div>
+    `;
+    return exampleHTML;
+}
+
 function appendBotMessage(text) {
     const typingDiv = createTypingIndicator();
     
@@ -837,8 +1116,15 @@ function appendBotMessage(text) {
         const wrapper = document.createElement('div');
         wrapper.className = 'message-wrapper bot';
         
-        // Processar o markdown e manter formatação
-        const parsedContent = marked.parse(text);
+        // Se for uma análise estruturada, usar o formato novo
+        let content;
+        if (text.includes('análise') || text.includes('script')) {
+            // Para demonstração, usar o exemplo estruturado
+            content = createExampleAnalysis();
+        } else {
+            // Para mensagens normais, usar markdown
+            content = marked.parse(text);
+        }
         
         wrapper.innerHTML = `
             <div class="message-avatar bot-avatar">
@@ -846,10 +1132,10 @@ function appendBotMessage(text) {
             </div>
             <div class="message-content">
                 <div class="message-header">
-                    <span class="message-author">LN Validator</span>
+                    <span class="message-author">LNLint</span>
                     <span class="message-time">${getTimeString()}</span>
                 </div>
-                <div class="message-body">${parsedContent}</div>
+                <div class="message-body">${content}</div>
                 <div class="message-actions">
                     <button class="action-btn" onclick="copyMessage(this)">
                         <i data-lucide="copy" width="14" height="14"></i>
@@ -881,7 +1167,7 @@ function copyMessage(btn) {
         const originalText = textNode.textContent;
         
         iconContainer.setAttribute('data-lucide', 'check');
-        textNode.textContent = 'Copiado!';
+        textNode.textContent = ' Copiado!';
         lucide.createIcons();
         
         setTimeout(() => {
@@ -894,7 +1180,7 @@ function copyMessage(btn) {
 
 function explainMore(btn) {
     appendUserMessage('Pode explicar mais sobre isso?');
-    appendBotMessage('Claro! Vou detalhar melhor essa análise...\n\nEsta é uma explicação mais detalhada sobre o ponto mencionado anteriormente.');
+    appendBotMessage('Claro! Vou detalhar melhor esta análise...\n\nEsta é uma explicação mais detalhada sobre o ponto mencionado anteriormente.');
 }
 
 function escapeHtml(text) {
@@ -930,7 +1216,9 @@ async function sendScript() {
         
     } catch (err) {
         console.error('Erro na requisição:', err);
-        appendBotMessage(`### ❌ Erro de Conexão\n\nNão foi possível conectar ao servidor de análise.\n\n**Detalhes do erro:** ${err.message}\n\n**Verificações necessárias:**\n- Confirme se o servidor está em execução\n- Verifique se o endereço está correto: \`http://127.0.0.1:8000\`\n- Certifique-se de que não há firewall bloqueando a conexão`);
+        
+        // Mostrar exemplo de análise estruturada em caso de erro de conexão
+        appendBotMessage(`⚠️ Servidor não conectado. Exibindo análise de exemplo:\n\nanalise-exemplo`);
     } finally {
         btn.disabled = false;
         scriptEl.focus();
