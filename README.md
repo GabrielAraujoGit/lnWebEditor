@@ -1,4 +1,4 @@
-# <img src="https://api.iconify.design/lucide/layout-template.svg" width="26" style="margin-bottom:-4px" /> lnWebEditor
+# <img src="https://api.iconify.design/lucide/layout-template.svg?color=%23ffffff" width="26" style="margin-bottom:-4px" /> lnWebEditor
 
 <div align="left">
   <img src="https://img.shields.io/badge/Project-lnWebEditor-1976d2?style=for-the-badge" />
@@ -10,7 +10,7 @@
 
 ------------------------------------------------------------------------
 
-## <img src="https://api.iconify.design/lucide/info.svg" width="18" /> Descrição Geral
+## <img src="https://api.iconify.design/lucide/info.svg?color=%23ffffff" width="18" /> Descrição Geral
 
 
 O **lnWebEditor** é um editor web leve e independente, desenvolvido para
@@ -27,7 +27,7 @@ JavaScript**, garantindo portabilidade máxima.
 
 ------------------------------------------------------------------------
 
-## <img src="https://api.iconify.design/lucide/list.svg" width="18" /> Funcionalidades
+## <img src="https://api.iconify.design/lucide/list.svg?color=%23ffffff" width="18" /> Funcionalidades
 
 
 -   **Syntax Highlight completo para LN/Baan**
@@ -39,7 +39,7 @@ JavaScript**, garantindo portabilidade máxima.
 
 ------------------------------------------------------------------------
 
-## <img src="https://api.iconify.design/lucide/folder-tree.svg" width="18" /> Estrutura do Projeto
+## <img src="https://api.iconify.design/lucide/folder-tree.svg?color=%23ffffff" width="18" /> Estrutura do Projeto
 
 
     lnWebEditor/
@@ -54,7 +54,7 @@ JavaScript**, garantindo portabilidade máxima.
 
 ------------------------------------------------------------------------
 
-## <img src="https://api.iconify.design/lucide/play.svg" width="18" /> Como Usar
+## <img src="https://api.iconify.design/lucide/play.svg?color=%23ffffff" width="18" /> Como Usar
 
 
 ### 1. Clonar o repositório
@@ -72,13 +72,13 @@ Basta abrir o arquivo:
 Nenhuma instalação é necessária. O editor funciona totalmente offline.
 
 ------------------------------------------------------------------------
-## <img src="https://api.iconify.design/lucide/code.svg" width="18" /> Tecnologias
+## <img src="https://api.iconify.design/lucide/code.svg?color=%23ffffff" width="18" /> Tecnologias
 
 <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" /> <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" /> <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" /> <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
 
 ------------------------------------------------------------------------
 
-## <img src="https://api.iconify.design/lucide/shield.svg" width="18" /> Licença
+## <img src="https://api.iconify.design/lucide/shield.svg?color=%23ffffff" width="18" /> Licença
 
 Distribuído sob a licença **Apache-2.0**.
 
