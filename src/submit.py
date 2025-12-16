@@ -83,20 +83,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def analyze_script(script: str, context: list[str] | None = None):
-
-    context_block = ""
-    if context:
-        joined_context = "\n".join(
-            [f"- {msg}" for msg in context]
-        )
-        context_block = f"""
-**CONTEXTO DA CONVERSA (mensagens anteriores):**
-{joined_context}
-
-"""
-
-
+def analyze_script(script: str):
     prompt = f"""
 Você é um **validador especialista em Infor LN / Baan 4GL**, com profundo conhecimento em:
 
@@ -115,16 +102,12 @@ Você é um **validador especialista em Infor LN / Baan 4GL**, com profundo conh
 - Declaração: domain, long, string, double
 - Funções built-in: strip$(), concat$(), val(), str$()
 
-
-{context_block}
-
 **CATÁLOGO DE REFERÊNCIA:**
 {json.dumps(tables, indent=2)}
 
 **CAMPOS COMUNS (aplicáveis a múltiplas tabelas):**
 {json.dumps(common_fields, indent=2)}
 
-{context_block}
 ---
 
 **SCRIPT PARA ANÁLISE:**
@@ -200,10 +183,7 @@ Se COM erros: análise detalhada + código corrigido
 
 @app.post("/analyze")
 async def analyze(request: ScriptRequest):
-    result = analyze_script(
-        request.script,
-        request.context
-    )
+    result = analyze_script(request.script)
     return {"analysis": result}
 
 if __name__ == "__main__":
