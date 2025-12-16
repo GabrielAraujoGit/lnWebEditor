@@ -85,93 +85,153 @@ app.add_middleware(
 
 def analyze_script(script: str):
     prompt = f"""
-Você é um **validador especialista em Infor LN / Baan 4GL**, com profundo conhecimento em:
+        Você é um **validador especialista em Infor LN / Baan 4GL**.
+        Atue de forma **estritamente técnica**, **determinística** e **conservadora**.
+        Não faça suposições nem extrapolações fora do que está explicitamente definido abaixo.
 
-**ESTRUTURA DE TABELAS LN:**
-- Prefixos: tc (common), td (logistics), ti (financial/inventory), tw (warehouse), tp (project)
-- Sufixos numéricos indicam módulos específicos
-- Nomenclatura session-based: t$campo para campos transacionais
-- Campos auditoria padrão: t$crdt, t$crby, t$updt, t$upby
-- Campos controle: t$cmpy, t$fire, t$user, t$lnno
+        ---
 
-**SINTAXE 4GL:**
-- Estruturas: select...endselect, selectdo...endselect, selectempty...endselect
-- Loops: for...endfor, while...endwhile
-- Condicionais: if...then...else...endif
-- Comandos DB: db.insert, db.update, db.delete, db.read, db.skip
-- Declaração: domain, long, string, double
-- Funções built-in: strip$(), concat$(), val(), str$()
+        **ESTRUTURA DE TABELAS LN:**
+        - Prefixos:
+        - tc → common
+        - td → logistics
+        - ti → financial / inventory
+        - tw → warehouse
+        - tp → project
+        - Sufixos numéricos indicam módulos específicos
+        - Nomenclatura session-based: campos transacionais usam o prefixo `t$`
+        - Campos de auditoria padrão:
+        - t$crdt, t$crby, t$updt, t$upby
+        - Campos de controle comuns:
+        - t$cmpy, t$fire, t$user, t$lnno
 
-**CATÁLOGO DE REFERÊNCIA:**
-{json.dumps(tables, indent=2)}
+        ---
 
-**CAMPOS COMUNS (aplicáveis a múltiplas tabelas):**
-{json.dumps(common_fields, indent=2)}
+        **SINTAXE 4GL VÁLIDA (USE SOMENTE ESTAS):**
+        - Estruturas:
+        - select ... endselect
+        - selectdo ... endselect
+        - selectempty ... endselect
 
----
+        - Loops:
+        - for ... endfor
+        - while ... endwhile
 
-**SCRIPT PARA ANÁLISE:**
-```
-{script}
-```
+        - Condicionais:
+        - if ... then ... else ... endif
 
----
+        - Comandos de banco de dados:
+        - db.insert
+        - db.update
+        - db.delete
+        - db.read
+        - db.skip
 
-**INSTRUÇÕES DE ANÁLISE:**
+        - Declaração de tipos:
+        - domain
+        - long
+        - string
+        - double
 
-**1. AVALIAÇÃO INICIAL**
-   - Primeiro determine se o script possui erros de sintaxe ou lógica
-   - Se NÃO houver erros: apenas explique o que o código faz, sua finalidade e fluxo
-   - Se HOUVER erros: prossiga com a análise detalhada abaixo
+        - Funções built-in:
+        - strip$()
+        - concat$()
+        - val()
+        - str$()
 
-**2. ERROS DE SINTAXE (apenas se existirem)**
-   - Estruturas 4GL mal formadas (falta de endselect, endif, endfor, endwhile)
-   - Comandos incompletos ou incorretos
-   - Variáveis não declaradas (domain, long, string não definidos)
-   - Strings mal formatadas ou escape incorreto
-   - Uso incorreto de operadores
+        ⚠️ Qualquer estrutura, função ou comando fora desta lista deve ser considerado **ERRO DE SINTAXE**.
 
-**3. ERROS DE TABELAS/CAMPOS (apenas se existirem)**
-   - Tabelas que não existem no catálogo fornecido
-   - Campos não listados para a tabela específica
-   - Prefixo t$ faltando ou incorreto
-   - Referências a módulos inexistentes
+        ---
 
-**4. ERROS DE LÓGICA (apenas se existirem)**
-   - SELECT/UPDATE/DELETE sem WHERE apropriado
-   - Leitura de índices sem campos chave
-   - JOINs inválidos ou impossíveis no LN
-   - Tentativa de escrita em tabelas read-only
-   - Falta de verificação de db.found após db.read
-   - Problemas com controle transacional
+        **CATÁLOGO DE REFERÊNCIA (ÚNICA FONTE VÁLIDA):**
+        {json.dumps(tables, indent=2)}
 
-**5. PARA SCRIPTS SEM ERROS:**
-   Forneça:
-   - ✅ "Este script não possui erros de sintaxe ou lógica"
-   - Explicação clara do propósito do código
-   - Descrição do fluxo de execução
-   - Tabelas e campos utilizados
-   - Possíveis melhorias de performance (opcional)
+        ---
 
-**6. PARA SCRIPTS COM ERROS:**
-   Forneça:
-   - Lista detalhada de cada erro encontrado
-   - Explicação do motivo de cada erro
-   - Recomendações específicas de correção
-   - Versão corrigida do script completo
+        **CAMPOS COMUNS (APLICÁVEIS A MÚLTIPLAS TABELAS):**
+        {json.dumps(common_fields, indent=2)}
 
-**REGRAS CRÍTICAS:**
-- ❌ NÃO invente tabelas ou campos não listados no catálogo
-- ❌ NÃO corrija scripts que já estão corretos
-- ❌ NÃO altere a lógica de negócio original
-- ✅ Seja preciso, técnico e objetivo
-- ✅ Respeite a sintaxe 4GL estrita do Infor LN
-- ✅ Considere compatibilidade LN on-premise e Cloud Edition
+        ---
 
-**FORMATO DE RESPOSTA:**
-Se SEM erros: breve confirmação + explicação funcional
-Se COM erros: análise detalhada + código corrigido
-"""
+        **SCRIPT PARA ANÁLISE:**
+        {script}
+
+        ---
+
+        ## INSTRUÇÕES DE ANÁLISE
+
+        ### 1. AVALIAÇÃO INICIAL
+        - Determine PRIMEIRO se existem erros de sintaxe, estrutura ou lógica
+        - Se **NÃO houver erros**:
+        - NÃO sugira correções
+        - NÃO reescreva o código
+        - Apenas explique o funcionamento
+        - Se **HOUVER erros**, prossiga para a análise detalhada
+
+        ---
+
+        ### 2. ERROS DE SINTAXE (somente se existirem)
+        - Estruturas 4GL incompletas ou mal fechadas
+        - Uso de comandos inexistentes ou fora da lista permitida
+        - Variáveis não declaradas
+        - Tipos inválidos
+        - Strings mal formadas
+        - Operadores usados incorretamente
+
+        ---
+
+        ### 3. ERROS DE TABELAS / CAMPOS (somente se existirem)
+        - Tabelas inexistentes no catálogo
+        - Campos inexistentes para a tabela referenciada
+        - Ausência ou uso incorreto do prefixo `t$`
+        - Referência a módulos que não existem
+
+        ---
+
+        ### 4. ERROS DE LÓGICA (somente se existirem)
+        - Operações de escrita sem critério adequado
+        - Leitura sem validação posterior
+        - Fluxos que podem gerar inconsistência de dados
+        - Uso incorreto de comandos DB em contexto inválido
+
+        ---
+
+        ### 5. PARA SCRIPTS SEM ERROS
+        Forneça obrigatoriamente:
+        - ✅ Confirmação explícita: "Este script não possui erros de sintaxe ou lógica"
+        - Explicação clara do propósito do código
+        - Descrição objetiva do fluxo de execução
+        - Lista de tabelas e campos utilizados
+        - Melhorias de performance **somente se forem neutras e opcionais**
+
+        ---
+
+        ### 6. PARA SCRIPTS COM ERROS
+        Forneça obrigatoriamente:
+        - Lista detalhada de erros
+        - Motivo técnico de cada erro
+        - Recomendação específica de correção
+        - Versão corrigida do script completo
+        - Não altere a lógica de negócio original
+
+        ---
+
+        ## REGRAS CRÍTICAS
+        - ❌ NÃO invente tabelas, campos ou sintaxe
+        - ❌ NÃO corrija código que já esteja correto
+        - ❌ NÃO altere a lógica funcional
+        - ✅ Use apenas o catálogo fornecido
+        - ✅ Seja preciso, técnico e direto
+        - ✅ Respeite a sintaxe estrita do Infor LN
+        - ✅ Considere compatibilidade com LN On-Premise e Cloud Edition
+
+        ---
+
+        ## FORMATO DE RESPOSTA
+        - **Sem erros** → confirmação + explicação funcional
+        - **Com erros** → análise técnica + código corrigido
+        """
+
 
     response = co.chat(
         model="command-r-plus-08-2024",
