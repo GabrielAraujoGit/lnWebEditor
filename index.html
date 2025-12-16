@@ -1,1271 +1,1108 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LNLint Chat</title>
-<link href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism-tomorrow.css" rel="stylesheet" />
-<script src="https://unpkg.com/lucide@latest"></script>
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-:root {
-    /* Brand */
-    --primary: #2563eb;
-    --primary-hover: #0044ff;
-    --secondary: #64748b;
-    --accent: #38bdf8;
-
-    /* Backgrounds */
-    --bg-main: #020617;
-    --bg-secondary: #020617;
-    --bg-chat: #020617;
-    --bg-bot: #0f172a;
-    --bg-user: #2563eb;
-
-    /* Text */  
-    --text-primary: #f8fafc;
-    --text-secondary: #a1acc2;
-
-    /* UI */
-    --border: #1e293b;
-
-    /* States */
-    --success: #22c55e;
-    --warning: #facc15;
-    --error: #ef4444;
-    --info: #38bdf8;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: var(--bg-main);
-    color: var(--text-primary);
-    height: 100vh;
-    overflow: hidden;
-}
-
-.container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-/* Header */
-header {
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border);
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    backdrop-filter: blur(10px);
-}
-
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.logo {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, #fa2500, #e60000);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 18px;
-    flex-shrink: 0;
-}
-
-.header-title h1 {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-
-.header-subtitle {
-    font-size: 11px;
-    color: var(--text-secondary);
-    margin-top: 2px;
-    display: none;
-}
-
-.header-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.icon-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-secondary);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    flex-shrink: 0;
-}
-
-.icon-btn:hover {
-    background: var(--bg-main);
-    color: var(--text-primary);
-    border-color: var(--primary);
-}
-
-/* Chat Area */
-#chat {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    background: var(--bg-chat);
-}
-
-#chat::-webkit-scrollbar {
-    width: 8px;
-}
-
-#chat::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-#chat::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 4px;
-}
-
-#chat::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary);
-}
-
-.message-wrapper {
-    display: flex;
-    gap: 12px;
-    opacity: 0;
-    animation: fadeIn 0.4s ease forwards;
-    width: 100%;
-}
-
-@keyframes fadeIn {
-    to {
-        opacity: 1;
-    }
-}
-
-.message-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 14px;
-}
-
-.user-avatar {
-    background: linear-gradient(135deg, var(--primary), #7c3aed);
-}
-
-.bot-avatar {
-    background: linear-gradient(135deg, #10b981, #059669);
-}
-
-.message-content {
-    flex: 1;
-    min-width: 0;
-    max-width: 75ch;
-}
-
-.message-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-    flex-wrap: wrap;
-}
-
-.message-author {
-    font-weight: 600;
-    font-size: 13px;
-}
-
-.message-time {
-    font-size: 11px;
-    color: var(--text-secondary);
-}
-
-.message-body {
-    background: var(--bg-bot);
-    padding: 12px 16px;
-    border-radius: 12px;
-    line-height: 1.6;
-    position: relative;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-}
-
-.message-body h3 {
-    margin: 16px 0 8px 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.message-body h3:first-child {
-    margin-top: 0;
-}
-
-.message-body ul, .message-body ol {
-    margin: 8px 0 8px 20px;
-}
-
-.message-body li {
-    margin: 4px 0;
-}
-
-.message-body p {
-    margin: 8px 0;
-}
-
-.message-body pre {
-    background: var(--bg-main);
-    padding: 12px;
-    border-radius: 8px;
-    overflow-x: auto;
-    margin: 12px 0;
-    border: 1px solid var(--border);
-}
-
-.message-body code {
-    font-family: 'Fira Code', 'Consolas', monospace;
-    font-size: 13px;
-}
-
-/* Analysis Summary - Item 2 do Backlog */
-.analysis-summary {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 16px;
-    background: rgba(15, 23, 42, 0.5);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 20px;
-}
-
-.summary-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-
-.summary-item.error {
-    background: rgba(239, 68, 68, 0.15);
-    color: var(--error);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.summary-item.warning {
-    background: rgba(250, 204, 21, 0.15);
-    color: var(--warning);
-    border: 1px solid rgba(250, 204, 21, 0.3);
-}
-
-.summary-item.info {
-    background: rgba(56, 189, 248, 0.15);
-    color: var(--info);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-}
-
-.summary-item.success {
-    background: rgba(34, 197, 94, 0.15);
-    color: var(--success);
-    border: 1px solid rgba(34, 197, 94, 0.3);
-}
-
-.summary-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Analysis Sections - Item 1 do Backlog (Semântica Visual) */
-.analysis-section {
-    margin: 16px 0;
-    border-left: 3px solid var(--border);
-    padding-left: 16px;
-}
-
-.analysis-section.syntax-error {
-    border-left-color: var(--error);
-}
-
-.analysis-section.structural-warning {
-    border-left-color: var(--warning);
-}
-
-.analysis-section.improvement {
-    border-left-color: var(--info);
-}
-
-.analysis-section.optimization {
-    border-left-color: var(--success);
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-    font-weight: 600;
-    font-size: 16px;
-}
-
-.issue-item {
-    background: rgba(15, 23, 42, 0.5);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px;
-    margin: 10px 0;
-    transition: all 0.2s;
-}
-
-.issue-item:hover {
-    border-color: var(--primary);
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
-}
-
-.issue-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.issue-title {
-    font-weight: 600;
-    font-size: 15px;
-    color: var(--text-primary);
-    line-height: 1.4;
-}
-
-.issue-line {
-    display: inline-flex;
-    align-items: center;
-    background: rgba(37, 99, 235, 0.2);
-    color: var(--info);
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    font-family: 'Fira Code', monospace;
-}
-
-.issue-message {
-    flex: 1;
-    line-height: 1.6;
-    color: var(--text-secondary);
-    font-size: 14px;
-}
-
-/* Item 7 do Backlog - Code Blocks com Contexto */
-.issue-code {
-    background: var(--bg-main);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 10px 14px;
-    margin-top: 10px;
-    font-family: 'Fira Code', monospace;
-    font-size: 13px;
-    overflow-x: auto;
-    position: relative;
-}
-
-.issue-code.error-code {
-    border-left: 3px solid var(--error);
-    background: rgba(239, 68, 68, 0.05);
-}
-
-.issue-code.warning-code {
-    border-left: 3px solid var(--warning);
-    background: rgba(250, 204, 21, 0.05);
-}
-
-.issue-code.suggestion-code {
-    border-left: 3px solid var(--info);
-    background: rgba(56, 189, 248, 0.05);
-}
-
-.issue-code.optimized-code {
-    border-left: 3px solid var(--success);
-    background: rgba(34, 197, 94, 0.05);
-}
-
-.status-indicator {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 12px 16px;
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    border-radius: 8px;
-    color: var(--success);
-    font-size: 14px;
-    margin: 12px 0;
-}
-
-/* Chat alignment */
-.message-wrapper.user {
-    flex-direction: row-reverse;
-}
-
-.message-wrapper.user .message-content {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.message-wrapper.user .message-header {
-    flex-direction: row-reverse;
-}
-
-.message-wrapper.user .message-body {
-    background: var(--bg-user);
-    border-radius: 12px 12px 4px 12px;
-}
-
-.message-wrapper.bot .message-body {
-    border-radius: 12px 12px 12px 4px;
-}
-
-.message-actions {
-    display: flex;
-    gap: 6px;
-    margin-top: 8px;
-    flex-wrap: wrap;
-}
-
-.action-btn {
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: transparent;
-    color: var(--text-secondary);
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.action-btn:hover {
-    background: var(--bg-main);
-    color: var(--text-primary);
-    border-color: var(--primary);
-}
-
-/* Typing Indicator */
-.typing-indicator {
-    display: flex;
-    gap: 4px;
-    padding: 16px;
-}
-
-.typing-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--text-secondary);
-    animation: typing 1.4s infinite;
-}
-
-.typing-dot:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.typing-dot:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-@keyframes typing {
-    0%, 60%, 100% {
-        transform: translateY(0);
-        opacity: 0.7;
-    }
-    30% {
-        transform: translateY(-10px);
-        opacity: 1;
-    }
-}
-
-/* Input Area */
-.input-container {
-    padding: 12px 16px;
-    background: var(--bg-secondary);
-    border-top: 1px solid var(--border);
-}
-
-.input-wrapper {
-    max-width: 900px;
-    margin: 0 auto;
-    background: var(--bg-main);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 4px;
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    transition: border-color 0.2s;
-}
-
-.input-wrapper:focus-within {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-#script {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text-primary);
-    font-family: 'Fira Code', 'Consolas', monospace;
-    font-size: 14px;
-    padding: 12px 16px;
-    resize: none;
-    min-height: 24px;
-    max-height: 200px;
-    line-height: 1.5;
-}
-
-#script::placeholder {
-    color: var(--text-secondary);
-}
-
-.input-actions {
-    display: flex;
-    gap: 4px;
-    padding: 8px;
-}
-
-#sendBtn {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    border: none;
-    background: var(--primary);
-    color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    font-weight: bold;
-}
-
-#sendBtn:hover:not(:disabled) {
-    background: var(--primary-hover);
-    transform: scale(1.05);
-}
-
-#sendBtn:active:not(:disabled) {
-    transform: scale(0.95);
-}
-
-#sendBtn:disabled {
-    background: var(--border);
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.input-hint {
-    text-align: center;
-    font-size: 11px;
-    color: var(--text-secondary);
-    margin-top: 8px;
-}
-
-/* Welcome Screen */
-.welcome {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    text-align: center;
-    padding: 20px;
-}
-
-.welcome-icon {
-    width: 64px;
-    height: 64px;
-    background: linear-gradient(135deg, var(--primary), #7c3aed);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.welcome h2 {
-    font-size: 24px;
-    margin-bottom: 12px;
-    background: linear-gradient(135deg, var(--primary), #7c3aed);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.welcome p {
-    color: var(--text-secondary);
-    font-size: 14px;
-    max-width: 500px;
-    line-height: 1.6;
-}
-
-.suggestions {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    margin-top: 24px;
-    width: 100%;
-    max-width: 800px;
-}
-
-.suggestion-card {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.suggestion-card:hover {
-    border-color: var(--primary);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-}
-
-.suggestion-title {
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.suggestion-desc {
-    font-size: 12px;
-    color: var(--text-secondary);
-}
-/* ===========================
-   MOBILE FIRST (default)
-   =========================== */
-
-/* Corrige scroll no mobile */
-html, body {
-    height: 100%;
-    overflow: hidden;
-}
-
-body {
-    overflow: hidden;
-}
-
-.container {
-    height: 100dvh; /* viewport real no mobile */
-}
-
-/* Header compacto */
-header {
-    padding: 10px 12px;
-}
-
-.header-title h1 {
-    font-size: 16px;
-}
-
-.header-subtitle {
-    display: none;
-}
-
-.icon-btn {
-    width: 40px;
-    height: 40px;
-}
-
-/* Chat ocupa tudo */
-#chat {
-    padding: 12px;
-    gap: 12px;
-}
-
-/* Mensagens */
-.message-wrapper {
-    gap: 8px;
-}
-
-.message-avatar {
-    width: 28px;
-    height: 28px;
-    font-size: 12px;
-}
-
-.message-content {
-    max-width: 100%;
-}
-
-/* Balões mais compactos */
-.message-body {
-    padding: 10px 12px;
-    font-size: 14px;
-    border-radius: 10px;
-}
-
-/* Código nunca estoura */
-.message-body pre,
-.issue-code {
-    max-width: 100%;
-    overflow-x: auto;
-    font-size: 12px;
-}
-
-/* Actions empilhadas */
-.message-actions {
-    gap: 4px;
-}
-
-.action-btn {
-    font-size: 11px;
-    padding: 6px 8px;
-}
-
-/* Input fixo no fundo (teclado mobile) */
-.input-container {
-    padding: 8px;
-}
-
-.input-wrapper {
-    width: 100%;
-    border-radius: 14px;
-}
-
-#script {
-    font-size: 14px;
-    padding: 10px 12px;
-    max-height: 140px;
-}
-
-/* Botão grande para touch */
-#sendBtn {
-    width: 44px;
-    height: 44px;
-}
-
-/* Welcome */
-.welcome h2 {
-    font-size: 20px;
-}
-
-.welcome p {
-    font-size: 13px;
-}
-
-/* Sugestões sempre 1 coluna no mobile */
-.suggestions {
-    grid-template-columns: 1fr;
-}
-
-/* ===========================
-   TABLET (>= 640px)
-   =========================== */
-@media (min-width: 640px) {
-
-    header {
-        padding: 16px 24px;
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LNLint Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism-tomorrow.css" rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 
-    .header-title h1 {
-        font-size: 20px;
+    :root {
+        /* Brand */
+        --primary: #2563eb;
+        --primary-hover: #0044ff;
+        --secondary: #64748b;
+        --accent: #38bdf8;
+
+        /* Backgrounds */
+        --bg-main: #020617;
+        --bg-secondary: #020617;
+        --bg-chat: #020617;
+        --bg-bot: #0f172a;
+        --bg-user: #2563eb;
+
+        /* Text */  
+        --text-primary: #f8fafc;
+        --text-secondary: #a1acc2;
+
+        /* UI */
+        --border: #1e293b;
+
+        /* States */
+        --success: #22c55e;
+        --warning: #facc15;
+        --error: #ef4444;
+        --info: #38bdf8;
     }
 
-    .header-subtitle {
-        display: block;
-        font-size: 12px;
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: var(--bg-main);
+        color: var(--text-primary);
+        height: 100vh;
+        overflow: hidden;
     }
-
-    #chat {
-        padding: 24px;
-        gap: 20px;
-    }
-
-    .message-avatar {
-        width: 36px;
-        height: 36px;
-    }
-
-    .message-body {
-        padding: 16px 20px;
-        font-size: 15px;
-    }
-
-    .suggestions {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    }
-}
-
-/* ===========================
-   DESKTOP (>= 1024px)
-   =========================== */
-@media (min-width: 1024px) {
 
     .container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
         max-width: 1400px;
         margin: 0 auto;
     }
 
+    /* Header */
+    header {
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        backdrop-filter: blur(10px);
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .logo {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #fa2500, #e60000);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .header-title h1 {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .header-subtitle {
+        font-size: 11px;
+        color: var(--text-secondary);
+        margin-top: 2px;
+        display: none;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .icon-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        flex-shrink: 0;
+    }
+
+    .icon-btn:hover {
+        background: var(--bg-main);
+        color: var(--text-primary);
+        border-color: var(--primary);
+    }
+
+    /* Chat Area */
+    #chat {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        background: var(--bg-chat);
+    }
+
+    #chat::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    #chat::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    #chat::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 4px;
+    }
+
+    #chat::-webkit-scrollbar-thumb:hover {
+        background: var(--text-secondary);
+    }
+
+    .message-wrapper {
+        display: flex;
+        gap: 12px;
+        opacity: 0;
+        animation: fadeIn 0.4s ease forwards;
+        width: 100%;
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+        }
+    }
+
+    .message-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .user-avatar {
+        background: linear-gradient(135deg, var(--primary), #7c3aed);
+    }
+
+    .bot-avatar {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
     .message-content {
+        flex: 1;
+        min-width: 0;
         max-width: 75ch;
+    }
+
+    .message-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+    }
+
+    .message-author {
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .message-time {
+        font-size: 11px;
+        color: var(--text-secondary);
+    }
+
+    .message-body {
+        background: var(--bg-bot);
+        padding: 12px 16px;
+        border-radius: 12px;
+        line-height: 1.6;
+        position: relative;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .message-body h3 {
+        margin: 16px 0 8px 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .message-body h3:first-child {
+        margin-top: 0;
+    }
+
+    .message-body ul, .message-body ol {
+        margin: 8px 0 8px 20px;
+    }
+
+    .message-body li {
+        margin: 4px 0;
+    }
+
+    .message-body p {
+        margin: 8px 0;
+    }
+
+    .message-body pre {
+        background: var(--bg-main);
+        padding: 12px;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 12px 0;
+        border: 1px solid var(--border);
+    }
+
+    .message-body code {
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 13px;
+    }
+
+    /* Analysis Summary - Item 2 do Backlog */
+    .analysis-summary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 16px;
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .summary-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .summary-item.error {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--error);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .summary-item.warning {
+        background: rgba(250, 204, 21, 0.15);
+        color: var(--warning);
+        border: 1px solid rgba(250, 204, 21, 0.3);
+    }
+
+    .summary-item.info {
+        background: rgba(56, 189, 248, 0.15);
+        color: var(--info);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .summary-item.success {
+        background: rgba(34, 197, 94, 0.15);
+        color: var(--success);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .summary-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Analysis Sections - Item 1 do Backlog (Semântica Visual) */
+    .analysis-section {
+        margin: 16px 0;
+        border-left: 3px solid var(--border);
+        padding-left: 16px;
+    }
+
+    .analysis-section.syntax-error {
+        border-left-color: var(--error);
+    }
+
+    .analysis-section.structural-warning {
+        border-left-color: var(--warning);
+    }
+
+    .analysis-section.improvement {
+        border-left-color: var(--info);
+    }
+
+    .analysis-section.optimization {
+        border-left-color: var(--success);
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .issue-item {
+        background: rgba(15, 23, 42, 0.5);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 14px;
+        margin: 10px 0;
+        transition: all 0.2s;
+    }
+
+    .issue-item:hover {
+        border-color: var(--primary);
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+    }
+
+    .issue-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .issue-title {
+        font-weight: 600;
+        font-size: 15px;
+        color: var(--text-primary);
+        line-height: 1.4;
+    }
+
+    .issue-line {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(37, 99, 235, 0.2);
+        color: var(--info);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: 'Fira Code', monospace;
+    }
+
+    .issue-message {
+        flex: 1;
+        line-height: 1.6;
+        color: var(--text-secondary);
+        font-size: 14px;
+    }
+
+    /* Item 7 do Backlog - Code Blocks com Contexto */
+    .issue-code {
+        background: var(--bg-main);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 10px 14px;
+        margin-top: 10px;
+        font-family: 'Fira Code', monospace;
+        font-size: 13px;
+        overflow-x: auto;
+        position: relative;
+    }
+
+    .issue-code.error-code {
+        border-left: 3px solid var(--error);
+        background: rgba(239, 68, 68, 0.05);
+    }
+
+    .issue-code.warning-code {
+        border-left: 3px solid var(--warning);
+        background: rgba(250, 204, 21, 0.05);
+    }
+
+    .issue-code.suggestion-code {
+        border-left: 3px solid var(--info);
+        background: rgba(56, 189, 248, 0.05);
+    }
+
+    .issue-code.optimized-code {
+        border-left: 3px solid var(--success);
+        background: rgba(34, 197, 94, 0.05);
+    }
+
+    .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 12px 16px;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 8px;
+        color: var(--success);
+        font-size: 14px;
+        margin: 12px 0;
+    }
+
+    /* Chat alignment */
+    .message-wrapper.user {
+        flex-direction: row-reverse;
+    }
+
+    .message-wrapper.user .message-content {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .message-wrapper.user .message-header {
+        flex-direction: row-reverse;
+    }
+
+    .message-wrapper.user .message-body {
+        background: var(--bg-user);
+        border-radius: 12px 12px 4px 12px;
+    }
+
+    .message-wrapper.bot .message-body {
+        border-radius: 12px 12px 12px 4px;
+    }
+
+    .message-actions {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        padding: 6px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .action-btn:hover {
+        background: var(--bg-main);
+        color: var(--text-primary);
+        border-color: var(--primary);
+    }
+
+    /* Typing Indicator */
+    .typing-indicator {
+        display: flex;
+        gap: 4px;
+        padding: 16px;
+    }
+
+    .typing-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--text-secondary);
+        animation: typing 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+        0%, 60%, 100% {
+            transform: translateY(0);
+            opacity: 0.7;
+        }
+        30% {
+            transform: translateY(-10px);
+            opacity: 1;
+        }
+    }
+
+    /* Input Area */
+    .input-container {
+        padding: 12px 16px;
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border);
     }
 
     .input-wrapper {
         max-width: 900px;
         margin: 0 auto;
+        background: var(--bg-main);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 4px;
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        transition: border-color 0.2s;
     }
-}
-/* ===========================
-   FIX OVERFLOW MENSAGENS (MOBILE)
+
+    .input-wrapper:focus-within {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    #script {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--text-primary);
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 14px;
+        padding: 12px 16px;
+        resize: none;
+        min-height: 24px;
+        max-height: 200px;
+        line-height: 1.5;
+    }
+
+    #script::placeholder {
+        color: var(--text-secondary);
+    }
+
+    .input-actions {
+        display: flex;
+        gap: 4px;
+        padding: 8px;
+    }
+
+    #sendBtn {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        border: none;
+        background: var(--primary);
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        font-weight: bold;
+    }
+
+    #sendBtn:hover:not(:disabled) {
+        background: var(--primary-hover);
+        transform: scale(1.05);
+    }
+
+    #sendBtn:active:not(:disabled) {
+        transform: scale(0.95);
+    }
+
+    #sendBtn:disabled {
+        background: var(--border);
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .input-hint {
+        text-align: center;
+        font-size: 11px;
+        color: var(--text-secondary);
+        margin-top: 8px;
+    }
+
+    /* Welcome Screen */
+    .welcome {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .welcome-icon {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, var(--primary), #7c3aed);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .welcome h2 {
+        font-size: 24px;
+        margin-bottom: 12px;
+        background: linear-gradient(135deg, var(--primary), #7c3aed);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .welcome p {
+        color: var(--text-secondary);
+        font-size: 14px;
+        max-width: 500px;
+        line-height: 1.6;
+    }
+
+    .suggestions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin-top: 24px;
+        width: 100%;
+        max-width: 800px;
+    }
+
+    .suggestion-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .suggestion-card:hover {
+        border-color: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .suggestion-title {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .suggestion-desc {
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+    /* ===========================
+   SCROLL DEFINITIVO — CHAT
    =========================== */
 
-@media (max-width: 639px) {
-
-    /* Impede qualquer overflow horizontal */
-    body,
-    .container,
-    #chat {
-        overflow-x: hidden;
-    }
-
-    /* Wrapper nunca passa da tela */
-    .message-wrapper {
-        max-width: 100%;
+    html, body {
+        height: 100%;
+        margin: 0;
         overflow: hidden;
     }
 
-    /* Conteúdo respeita viewport real */
+    /* Layout base */
+    .container {
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Header nunca rola */
+    header {
+        flex-shrink: 0;
+    }
+
+    /* 🔑 CRÍTICO: permite scroll interno */
+    .main {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Chat é o ÚNICO scrollável */
+    #chat {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Input sempre visível */
+    .input-container {
+        flex-shrink: 0;
+        position: sticky;
+        bottom: 0;
+        background: var(--bg-secondary);
+    }
+
+   
+
+    .header-title h1 {
+        font-size: 16px;
+    }
+
+    .header-subtitle {
+        display: none;
+    }
+
+    .icon-btn {
+        width: 40px;
+        height: 40px;
+    }
+
+    
+
+    /* Mensagens */
+    .message-wrapper {
+        gap: 8px;
+    }
+
+    .message-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+
     .message-content {
         max-width: 100%;
-        min-width: 0;
     }
 
-    /* Balão NÃO pode crescer além da tela */
+    /* Balões mais compactos */
     .message-body {
-        max-width: 100%;
-        width: fit-content;
-        max-width: calc(100vw - 72px); /* avatar + padding */
-        box-sizing: border-box;
-        overflow: hidden;
+        padding: 10px 12px;
+        font-size: 14px;
+        border-radius: 10px;
     }
 
-    /* Código é sempre contido */
+    /* Código nunca estoura */
     .message-body pre,
-    .message-body code,
     .issue-code {
         max-width: 100%;
         overflow-x: auto;
-        white-space: pre;
-        word-break: normal;
-        box-sizing: border-box;
+        font-size: 12px;
     }
 
-    /* Usuário e bot tratados igualmente */
-    .message-wrapper.user .message-body,
-    .message-wrapper.bot .message-body {
-        max-width: calc(100vw - 72px);
+    /* Actions empilhadas */
+    .message-actions {
+        gap: 4px;
     }
 
-    /* Remove qualquer cálculo perigoso anterior */
-    .message-content {
-        max-width: unset !important;
+    .action-btn {
+        font-size: 11px;
+        padding: 6px 8px;
     }
-}
+
+    /* Input fixo no fundo (teclado mobile) */
+    .input-container {
+        padding: 8px;
+    }
+
+    .input-wrapper {
+        width: 100%;
+        border-radius: 14px;
+    }
+
+    #script {
+        font-size: 14px;
+        padding: 10px 12px;
+        max-height: 140px;
+    }
+
+    /* Botão grande para touch */
+    #sendBtn {
+        width: 44px;
+        height: 44px;
+    }
+
+    /* Welcome */
+    .welcome h2 {
+        font-size: 20px;
+    }
+
+    .welcome p {
+        font-size: 13px;
+    }
+
+    /* Sugestões sempre 1 coluna no mobile */
+    .suggestions {
+        grid-template-columns: 1fr;
+    }
+
+    /* ===========================
+    TABLET (>= 640px)
+    =========================== */
+    @media (min-width: 640px) {
+
+        header {
+            padding: 16px 24px;
+        }
+
+        .header-title h1 {
+            font-size: 20px;
+        }
+
+        .header-subtitle {
+            display: block;
+            font-size: 12px;
+        }
+
+        #chat {
+            padding: 24px;
+            gap: 20px;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+        }
+
+        .message-body {
+            padding: 16px 20px;
+            font-size: 15px;
+        }
+
+        .suggestions {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+    }
+
+    /* ===========================
+    DESKTOP (>= 1024px)
+    =========================== */
+    @media (min-width: 1024px) {
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .message-content {
+            max-width: 75ch;
+        }
+
+        .input-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+    }
+    /* ===========================
+    FIX OVERFLOW MENSAGENS (MOBILE)
+    =========================== */
+
+    @media (max-width: 639px) {
+
+        /* Impede qualquer overflow horizontal */
+        body,
+        .container,
+        #chat {
+            overflow-x: hidden;
+        }
+
+        /* Wrapper nunca passa da tela */
+        .message-wrapper {
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        /* Conteúdo respeita viewport real */
+        .message-content {
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        /* Balão NÃO pode crescer além da tela */
+        .message-body {
+            max-width: 100%;
+            width: fit-content;
+            max-width: calc(100vw - 72px); /* avatar + padding */
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* Código é sempre contido */
+        .message-body pre,
+        .message-body code,
+        .issue-code {
+            max-width: 100%;
+            overflow-x: auto;
+            white-space: pre;
+            word-break: normal;
+            box-sizing: border-box;
+        }
+
+        /* Usuário e bot tratados igualmente */
+        .message-wrapper.user .message-body,
+        .message-wrapper.bot .message-body {
+            max-width: calc(100vw - 72px);
+        }
+
+        /* Remove qualquer cálculo perigoso anterior */
+        .message-content {
+            max-width: unset !important;
+        }
+    }
 
 
 
 
 
-</style>
-</head>
-<body>
+    </style>
+    </head>
+    <body>
 
-<div class="container">
-    <header>
-        <div class="header-left">
-            <div class="logo">LN</div>
-            <div class="header-title">
-                <h1>LNLint</h1>
-                <div class="header-subtitle">Validador Inteligente de Scripts LN</div>
-            </div>
-        </div>
-        <div class="header-actions">
-            <button class="icon-btn" title="Limpar conversa" onclick="clearChat()">
-                <i data-lucide="trash-2" width="18" height="18"></i>
-            </button>
-            <button class="icon-btn" title="Configurações">
-                <i data-lucide="settings" width="18" height="18"></i>
-            </button>
-        </div>
-    </header>
-
-    <div id="chat">
-        <div class="welcome">
-            <div class="welcome-icon">
-                <i data-lucide="bot" width="40" height="40" stroke="white"></i>
-            </div>
-            <h2>Olá! Sou o LNLint</h2>
-            <p>Envie seu script LN e receba análises detalhadas sobre sintaxe, estrutura e recomendações de melhoria.</p>
-            
-            <div class="suggestions">
-                <div class="suggestion-card" onclick="useSuggestion('function teste\n  select * from tabela\nendselect')">
-                    <div class="suggestion-title">
-                        <i data-lucide="file-text" width="16" height="16"></i>
-                        Validar Sintaxe
-                    </div>
-                    <div class="suggestion-desc">Verificar erros de sintaxe básica</div>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <div class="logo">LN</div>
+                <div class="header-title">
+                    <h1>LNLint</h1>
+                    <div class="header-subtitle">Validador Inteligente de Scripts LN</div>
                 </div>
-                <div class="suggestion-card" onclick="useSuggestion('function consulta\n  | Minha consulta\n  select campo1, campo2 from usuarios where ativo = 1\nendselect')">
-                    <div class="suggestion-title">
-                        <i data-lucide="search" width="16" height="16"></i>
-                        Analisar Estrutura
-                    </div>
-                    <div class="suggestion-desc">Verificar estrutura e organização</div>
-                </div>
-                <div class="suggestion-card" onclick="useSuggestion('function relatorio\n  select * from clientes\n  where data > 20240101\nendselect')">
-                    <div class="suggestion-title">
-                        <i data-lucide="sparkles" width="16" height="16"></i>
-                        Otimizar Código
-                    </div>
-                    <div class="suggestion-desc">Receber recomendações de melhoria</div>
-                </div>
             </div>
-        </div>
-    </div>
-
-    <div class="input-container">
-        <div class="input-wrapper">
-            <textarea id="script" placeholder="Digite seu script LN aqui..." rows="1"></textarea>
-            <div class="input-actions">
-                <button id="sendBtn" title="Enviar (Enter)">
-                    <i data-lucide="send" width="20" height="20"></i>
+            <div class="header-actions">
+                <button class="icon-btn" title="Limpar conversa" onclick="clearChat()">
+                    <i data-lucide="trash-2" width="18" height="18"></i>
+                </button>
+                <button class="icon-btn" title="Configurações">
+                    <i data-lucide="settings" width="18" height="18"></i>
                 </button>
             </div>
+        </header>
+
+        <div id="chat">
+            <div class="welcome">
+                <div class="welcome-icon">
+                    <i data-lucide="bot" width="40" height="40" stroke="white"></i>
+                </div>
+                <h2>Olá! Sou o LNLint</h2>
+                <p>Envie seu script LN e receba análises detalhadas sobre sintaxe, estrutura e recomendações de melhoria.</p>
+                
+                <div class="suggestions">
+                    <div class="suggestion-card" onclick="useSuggestion('function teste\n  select * from tabela\nendselect')">
+                        <div class="suggestion-title">
+                            <i data-lucide="file-text" width="16" height="16"></i>
+                            Validar Sintaxe
+                        </div>
+                        <div class="suggestion-desc">Verificar erros de sintaxe básica</div>
+                    </div>
+                    <div class="suggestion-card" onclick="useSuggestion('function consulta\n  | Minha consulta\n  select campo1, campo2 from usuarios where ativo = 1\nendselect')">
+                        <div class="suggestion-title">
+                            <i data-lucide="search" width="16" height="16"></i>
+                            Analisar Estrutura
+                        </div>
+                        <div class="suggestion-desc">Verificar estrutura e organização</div>
+                    </div>
+                    <div class="suggestion-card" onclick="useSuggestion('function relatorio\n  select * from clientes\n  where data > 20240101\nendselect')">
+                        <div class="suggestion-title">
+                            <i data-lucide="sparkles" width="16" height="16"></i>
+                            Otimizar Código
+                        </div>
+                        <div class="suggestion-desc">Receber recomendações de melhoria</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="input-hint">Pressione Enter para enviar • Shift+Enter para nova linha</div>
+
+        <div class="input-container">
+            <div class="input-wrapper">
+                <textarea id="script" placeholder="Digite seu script LN aqui..." rows="1"></textarea>
+                <div class="input-actions">
+                    <button id="sendBtn" title="Enviar (Enter)">
+                        <i data-lucide="send" width="20" height="20"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="input-hint">Pressione Enter para enviar • Shift+Enter para nova linha</div>
+        </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.js"></script>
-<script>
-// Configuração do Prism para linguagem LN
-Prism.languages.ln = {
-    'keyword': /\b(function|select|from|where|endselect|if|then|else|endif|continue|return)\b/g,
-    'number': /\b\d+(\.\d+)?\b/g,
-    'string': /("|')(?:\\.|[^\n\\])*?\1/g,
-    'comment': /\|.*$/gm
-};
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/prism.js"></script>
+    <script>
+    // Configuração do Prism para linguagem LN
+    Prism.languages.ln = {
+        'keyword': /\b(function|select|from|where|endselect|if|then|else|endif|continue|return)\b/g,
+        'number': /\b\d+(\.\d+)?\b/g,
+        'string': /("|')(?:\\.|[^\n\\])*?\1/g,
+        'comment': /\|.*$/gm
+    };
 
-const chat = document.getElementById('chat');
-const btn = document.getElementById('sendBtn');
-const scriptEl = document.getElementById('script');
-let messageCount = 0;
+    const chat = document.getElementById('chat');
+    const btn = document.getElementById('sendBtn');
+    const scriptEl = document.getElementById('script');
+    let messageCount = 0;
 
-// Inicializar ícones lucide
-lucide.createIcons();
-
-// Auto-resize textarea
-scriptEl.addEventListener('input', function() {
-    this.style.height = 'auto';
-    this.style.height = this.scrollHeight + 'px';
-});
-
-function clearChat() {
-    chat.innerHTML = `
-        <div class="welcome">
-            <div class="welcome-icon">
-                <i data-lucide="bot" width="40" height="40" stroke="white"></i>
-            </div>
-            <h2>Olá! Sou o LNLint</h2>
-            <p>Envie seu script LN e receba análises detalhadas sobre sintaxe, estrutura e recomendações de melhoria.</p>
-            
-            <div class="suggestions">
-                <div class="suggestion-card" onclick="useSuggestion('function teste\\n  select * from tabela\\nendselect')">
-                    <div class="suggestion-title">
-                        <i data-lucide="file-text" width="16" height="16"></i>
-                        Validar Sintaxe
-                    </div>
-                    <div class="suggestion-desc">Verificar erros de sintaxe básica</div>
-                </div>
-                <div class="suggestion-card" onclick="useSuggestion('function consulta\\n  | Minha consulta\\n  select campo1, campo2 from usuarios where ativo = 1\\nendselect')">
-                    <div class="suggestion-title">
-                        <i data-lucide="search" width="16" height="16"></i>
-                        Analisar Estrutura
-                    </div>
-                    <div class="suggestion-desc">Verificar estrutura e organização</div>
-                </div>
-                <div class="suggestion-card" onclick="useSuggestion('function relatorio\\n  select * from clientes\\n  where data > 20240101\\nendselect')">
-                    <div class="suggestion-title">
-                        <i data-lucide="sparkles" width="16" height="16"></i>
-                        Otimizar Código
-                    </div>
-                    <div class="suggestion-desc">Receber recomendações de melhoria</div>
-                </div>
-            </div>
-        </div>
-    `;
-    messageCount = 0;
+    // Inicializar ícones lucide
     lucide.createIcons();
-}
 
-function useSuggestion(script) {
-    scriptEl.value = script;
-    scriptEl.focus();
-    scriptEl.style.height = 'auto';
-    scriptEl.style.height = scriptEl.scrollHeight + 'px';
-}
+    // Auto-resize textarea
+    scriptEl.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+    });
 
-function removeWelcome() {
-    const welcome = chat.querySelector('.welcome');
-    if (welcome) {
-        welcome.remove();
+    function clearChat() {
+        chat.innerHTML = `
+            <div class="welcome">
+                <div class="welcome-icon">
+                    <i data-lucide="bot" width="40" height="40" stroke="white"></i>
+                </div>
+                <h2>Olá! Sou o LNLint</h2>
+                <p>Envie seu script LN e receba análises detalhadas sobre sintaxe, estrutura e recomendações de melhoria.</p>
+                
+                <div class="suggestions">
+                    <div class="suggestion-card" onclick="useSuggestion('function teste\\n  select * from tabela\\nendselect')">
+                        <div class="suggestion-title">
+                            <i data-lucide="file-text" width="16" height="16"></i>
+                            Validar Sintaxe
+                        </div>
+                        <div class="suggestion-desc">Verificar erros de sintaxe básica</div>
+                    </div>
+                    <div class="suggestion-card" onclick="useSuggestion('function consulta\\n  | Minha consulta\\n  select campo1, campo2 from usuarios where ativo = 1\\nendselect')">
+                        <div class="suggestion-title">
+                            <i data-lucide="search" width="16" height="16"></i>
+                            Analisar Estrutura
+                        </div>
+                        <div class="suggestion-desc">Verificar estrutura e organização</div>
+                    </div>
+                    <div class="suggestion-card" onclick="useSuggestion('function relatorio\\n  select * from clientes\\n  where data > 20240101\\nendselect')">
+                        <div class="suggestion-title">
+                            <i data-lucide="sparkles" width="16" height="16"></i>
+                            Otimizar Código
+                        </div>
+                        <div class="suggestion-desc">Receber recomendações de melhoria</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        messageCount = 0;
+        lucide.createIcons();
     }
-}
 
-function getTimeString() {
-    const now = new Date();
-    return now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-}
+    function useSuggestion(script) {
+        scriptEl.value = script;
+        scriptEl.focus();
+        scriptEl.style.height = 'auto';
+        scriptEl.style.height = scriptEl.scrollHeight + 'px';
+    }
 
-function createTypingIndicator() {
-    removeWelcome();
-    const wrapper = document.createElement('div');
-    wrapper.className = 'message-wrapper typing';
-    wrapper.innerHTML = `
-        <div class="message-avatar bot-avatar">
-            <i data-lucide="bot" width="18" height="18" stroke="white"></i>
-        </div>
-        <div class="message-content">
-            <div class="message-header">
-                <span class="message-author">LNLint</span>
-                <span class="message-time">${getTimeString()}</span>
-            </div>
-            <div class="message-body">
-                <div class="typing-indicator">
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                </div>
-            </div>
-        </div>
-    `;
-    chat.appendChild(wrapper);
-    chat.scrollTop = chat.scrollHeight;
-    lucide.createIcons();
-    return wrapper;
-}
-
-function appendUserMessage(text) {
-    removeWelcome();
-    messageCount++;
-    const wrapper = document.createElement('div');
-    wrapper.className = 'message-wrapper user';
-    wrapper.innerHTML = `
-        <div class="message-avatar user-avatar">
-            <i data-lucide="user" width="18" height="18" stroke="white"></i>
-        </div>
-        <div class="message-content">
-            <div class="message-header">
-                <span class="message-author">Você</span>
-                <span class="message-time">${getTimeString()}</span>
-            </div>
-            <div class="message-body"><pre><code class="language-ln">${escapeHtml(text)}</code></pre></div>
-        </div>
-    `;
-    chat.appendChild(wrapper);
-    chat.scrollTop = chat.scrollHeight;
-    Prism.highlightAllUnder(wrapper);
-    lucide.createIcons();
-}
-
-// Criar exemplo de resposta estruturada com as novas classes
-function createExampleAnalysis() {
-    const exampleHTML = `
-        <!-- Resumo Visual - Item 2 do Backlog -->
-        <div class="analysis-summary">
-            <span class="summary-item error">
-                <i data-lucide="x-circle" width="16" height="16"></i>
-                1 erro sintático
-            </span>
-            <span class="summary-item warning">
-                <i data-lucide="alert-triangle" width="16" height="16"></i>
-                2 avisos estruturais
-            </span>
-            <span class="summary-item info">
-                <i data-lucide="sparkles" width="16" height="16"></i>
-                3 melhorias sugeridas
-            </span>
-            <span class="summary-item success">
-                <i data-lucide="trending-up" width="16" height="16"></i>
-                1 otimização possível
-            </span>
-        </div>
-
-        <!-- Seção de Erros - Item 1 do Backlog -->
-        <div class="analysis-section syntax-error">
-            <div class="section-header">
-                <i data-lucide="x-circle" width="20" height="20"></i>
-                Erros Sintáticos
-            </div>
-            
-            <div class="issue-item">
-                <div class="issue-header">
-                    <span class="issue-line">Linha 3</span>
-                    <div class="issue-title">Falta palavra-chave 'endselect'</div>
-                </div>
-                <div class="issue-message">
-                    O bloco SELECT não foi finalizado corretamente. Cada instrução SELECT deve ter um ENDSELECT correspondente para delimitar o escopo da consulta.
-                </div>
-                <div class="issue-code error-code">
-                    <code>function teste
-  select * from tabela
-  // Falta 'endselect' aqui</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- Seção de Avisos -->
-        <div class="analysis-section structural-warning">
-            <div class="section-header">
-                <i data-lucide="alert-triangle" width="20" height="20"></i>
-                Avisos Estruturais
-            </div>
-            
-            <div class="issue-item">
-                <div class="issue-header">
-                    <span class="issue-line">Linha 2</span>
-                    <div class="issue-title">Uso de SELECT * não recomendado</div>
-                </div>
-                <div class="issue-message">
-                    O uso de SELECT * pode impactar a performance e dificultar a manutenção. É recomendado especificar explicitamente os campos necessários.
-                </div>
-                <div class="issue-code warning-code">
-                    <code>select * from tabela  // Evite usar *</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- Seção de Melhorias -->
-        <div class="analysis-section improvement">
-            <div class="section-header">
-                <i data-lucide="sparkles" width="20" height="20"></i>
-                Sugestões de Melhoria
-            </div>
-            
-            <div class="issue-item">
-                <div class="issue-header">
-                    <span class="issue-line">Linha 1</span>
-                    <div class="issue-title">Adicionar comentário descritivo</div>
-                </div>
-                <div class="issue-message">
-                    Documentar o propósito da função melhora a legibilidade e facilita a manutenção do código.
-                </div>
-                <div class="issue-code suggestion-code">
-                    <code>| Descrição da função
-function teste</code>
-                </div>
-            </div>
-        </div>
-
-        <!-- Seção de Otimizações -->
-        <div class="analysis-section optimization">
-            <div class="section-header">
-                <i data-lucide="trending-up" width="20" height="20"></i>
-                Oportunidades de Otimização
-            </div>
-            
-            <div class="issue-item">
-                <div class="issue-header">
-                    <span class="issue-line">Linha 2</span>
-                    <div class="issue-title">Adicionar índice na consulta</div>
-                </div>
-                <div class="issue-message">
-                    Adicionar uma cláusula WHERE com filtros reduz o volume de dados processados e melhora significativamente a performance.
-                </div>
-                <div class="issue-code optimized-code">
-                    <code>select campo1, campo2 from tabela
-where status = 'ativo'</code>
-                </div>
-            </div>
-        </div>
-
-        <div class="status-indicator">
-            <i data-lucide="check-circle" width="18" height="18"></i>
-            Análise concluída com 7 observações
-        </div>
-    `;
-    return exampleHTML;
-}
-
-function appendBotMessage(text) {
-    const typingDiv = createTypingIndicator();
-    
-    setTimeout(() => {
-        chat.removeChild(typingDiv);
-        
-        const wrapper = document.createElement('div');
-        wrapper.className = 'message-wrapper bot';
-        
-        // Se for uma análise estruturada, usar o formato novo
-        let content;
-        if (text.includes('análise') || text.includes('script')) {
-            // Para demonstração, usar o exemplo estruturado
-            content = createExampleAnalysis();
-        } else {
-            // Para mensagens normais, usar markdown
-            content = marked.parse(text);
+    function removeWelcome() {
+        const welcome = chat.querySelector('.welcome');
+        if (welcome) {
+            welcome.remove();
         }
-        
+    }
+
+    function getTimeString() {
+        const now = new Date();
+        return now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function createTypingIndicator() {
+        removeWelcome();
+        const wrapper = document.createElement('div');
+        wrapper.className = 'message-wrapper typing';
         wrapper.innerHTML = `
             <div class="message-avatar bot-avatar">
                 <i data-lucide="bot" width="18" height="18" stroke="white"></i>
@@ -1275,109 +1112,294 @@ function appendBotMessage(text) {
                     <span class="message-author">LNLint</span>
                     <span class="message-time">${getTimeString()}</span>
                 </div>
-                <div class="message-body">${content}</div>
-                <div class="message-actions">
-                    <button class="action-btn" onclick="copyMessage(this)">
-                        <i data-lucide="copy" width="14" height="14"></i>
-                        Copiar
-                    </button>
-                    <button class="action-btn" onclick="explainMore(this)">
-                        <i data-lucide="lightbulb" width="14" height="14"></i>
-                        Explicar mais
-                    </button>
+                <div class="message-body">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
                 </div>
             </div>
         `;
-        
         chat.appendChild(wrapper);
         chat.scrollTop = chat.scrollHeight;
-        
-        // Aplicar syntax highlighting em todos os blocos de código
+        lucide.createIcons();
+        return wrapper;
+    }
+
+    function appendUserMessage(text) {
+        removeWelcome();
+        messageCount++;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'message-wrapper user';
+        wrapper.innerHTML = `
+            <div class="message-avatar user-avatar">
+                <i data-lucide="user" width="18" height="18" stroke="white"></i>
+            </div>
+            <div class="message-content">
+                <div class="message-header">
+                    <span class="message-author">Você</span>
+                    <span class="message-time">${getTimeString()}</span>
+                </div>
+                <div class="message-body"><pre><code class="language-ln">${escapeHtml(text)}</code></pre></div>
+            </div>
+        `;
+        chat.appendChild(wrapper);
+        chat.scrollTop = chat.scrollHeight;
         Prism.highlightAllUnder(wrapper);
         lucide.createIcons();
-    }, 1000);
-}
+    }
 
-function copyMessage(btn) {
-    const messageBody = btn.closest('.message-content').querySelector('.message-body');
-    const text = messageBody.innerText;
-    navigator.clipboard.writeText(text).then(() => {
-        const iconContainer = btn.querySelector('i');
-        const textNode = btn.childNodes[btn.childNodes.length - 1];
-        const originalText = textNode.textContent;
-        
-        iconContainer.setAttribute('data-lucide', 'check');
-        textNode.textContent = ' Copiado!';
-        lucide.createIcons();
+    // Criar exemplo de resposta estruturada com as novas classes
+    function createExampleAnalysis() {
+        const exampleHTML = `
+            <!-- Resumo Visual - Item 2 do Backlog -->
+            <div class="analysis-summary">
+                <span class="summary-item error">
+                    <i data-lucide="x-circle" width="16" height="16"></i>
+                    1 erro sintático
+                </span>
+                <span class="summary-item warning">
+                    <i data-lucide="alert-triangle" width="16" height="16"></i>
+                    2 avisos estruturais
+                </span>
+                <span class="summary-item info">
+                    <i data-lucide="sparkles" width="16" height="16"></i>
+                    3 melhorias sugeridas
+                </span>
+                <span class="summary-item success">
+                    <i data-lucide="trending-up" width="16" height="16"></i>
+                    1 otimização possível
+                </span>
+            </div>
+
+            <!-- Seção de Erros - Item 1 do Backlog -->
+            <div class="analysis-section syntax-error">
+                <div class="section-header">
+                    <i data-lucide="x-circle" width="20" height="20"></i>
+                    Erros Sintáticos
+                </div>
+                
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="issue-line">Linha 3</span>
+                        <div class="issue-title">Falta palavra-chave 'endselect'</div>
+                    </div>
+                    <div class="issue-message">
+                        O bloco SELECT não foi finalizado corretamente. Cada instrução SELECT deve ter um ENDSELECT correspondente para delimitar o escopo da consulta.
+                    </div>
+                    <div class="issue-code error-code">
+                        <code>function teste
+    select * from tabela
+    // Falta 'endselect' aqui</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Avisos -->
+            <div class="analysis-section structural-warning">
+                <div class="section-header">
+                    <i data-lucide="alert-triangle" width="20" height="20"></i>
+                    Avisos Estruturais
+                </div>
+                
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="issue-line">Linha 2</span>
+                        <div class="issue-title">Uso de SELECT * não recomendado</div>
+                    </div>
+                    <div class="issue-message">
+                        O uso de SELECT * pode impactar a performance e dificultar a manutenção. É recomendado especificar explicitamente os campos necessários.
+                    </div>
+                    <div class="issue-code warning-code">
+                        <code>select * from tabela  // Evite usar *</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Melhorias -->
+            <div class="analysis-section improvement">
+                <div class="section-header">
+                    <i data-lucide="sparkles" width="20" height="20"></i>
+                    Sugestões de Melhoria
+                </div>
+                
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="issue-line">Linha 1</span>
+                        <div class="issue-title">Adicionar comentário descritivo</div>
+                    </div>
+                    <div class="issue-message">
+                        Documentar o propósito da função melhora a legibilidade e facilita a manutenção do código.
+                    </div>
+                    <div class="issue-code suggestion-code">
+                        <code>| Descrição da função
+    function teste</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Otimizações -->
+            <div class="analysis-section optimization">
+                <div class="section-header">
+                    <i data-lucide="trending-up" width="20" height="20"></i>
+                    Oportunidades de Otimização
+                </div>
+                
+                <div class="issue-item">
+                    <div class="issue-header">
+                        <span class="issue-line">Linha 2</span>
+                        <div class="issue-title">Adicionar índice na consulta</div>
+                    </div>
+                    <div class="issue-message">
+                        Adicionar uma cláusula WHERE com filtros reduz o volume de dados processados e melhora significativamente a performance.
+                    </div>
+                    <div class="issue-code optimized-code">
+                        <code>select campo1, campo2 from tabela
+    where status = 'ativo'</code>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-indicator">
+                <i data-lucide="check-circle" width="18" height="18"></i>
+                Análise concluída com 7 observações
+            </div>
+        `;
+        return exampleHTML;
+    }
+
+    function appendBotMessage(text) {
+        const typingDiv = createTypingIndicator();
         
         setTimeout(() => {
-            iconContainer.setAttribute('data-lucide', 'copy');
-            textNode.textContent = originalText;
+            chat.removeChild(typingDiv);
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'message-wrapper bot';
+            
+            // Se for uma análise estruturada, usar o formato novo
+            let content;
+            if (text.includes('análise') || text.includes('script')) {
+                // Para demonstração, usar o exemplo estruturado
+                content = createExampleAnalysis();
+            } else {
+                // Para mensagens normais, usar markdown
+                content = marked.parse(text);
+            }
+            
+            wrapper.innerHTML = `
+                <div class="message-avatar bot-avatar">
+                    <i data-lucide="bot" width="18" height="18" stroke="white"></i>
+                </div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-author">LNLint</span>
+                        <span class="message-time">${getTimeString()}</span>
+                    </div>
+                    <div class="message-body">${content}</div>
+                    <div class="message-actions">
+                        <button class="action-btn" onclick="copyMessage(this)">
+                            <i data-lucide="copy" width="14" height="14"></i>
+                            Copiar
+                        </button>
+                        <button class="action-btn" onclick="explainMore(this)">
+                            <i data-lucide="lightbulb" width="14" height="14"></i>
+                            Explicar mais
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            chat.appendChild(wrapper);
+            chat.scrollTop = chat.scrollHeight;
+            
+            // Aplicar syntax highlighting em todos os blocos de código
+            Prism.highlightAllUnder(wrapper);
             lucide.createIcons();
-        }, 2000);
-    });
-}
+        }, 1000);
+    }
 
-function explainMore(btn) {
-    appendUserMessage('Pode explicar mais sobre isso?');
-    appendBotMessage('Claro! Vou detalhar melhor esta análise...\n\nEsta é uma explicação mais detalhada sobre o ponto mencionado anteriormente.');
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-async function sendScript() {
-    const script = scriptEl.value.trim();
-    if (!script) return;
-
-    appendUserMessage(script);
-    btn.disabled = true;
-    scriptEl.value = '';
-    scriptEl.style.height = 'auto';
-
-    try {
-        const response = await fetch('http://127.0.0.1:8000/analyze', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ script })
+    function copyMessage(btn) {
+        const messageBody = btn.closest('.message-content').querySelector('.message-body');
+        const text = messageBody.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const iconContainer = btn.querySelector('i');
+            const textNode = btn.childNodes[btn.childNodes.length - 1];
+            const originalText = textNode.textContent;
+            
+            iconContainer.setAttribute('data-lucide', 'check');
+            textNode.textContent = ' Copiado!';
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                iconContainer.setAttribute('data-lucide', 'copy');
+                textNode.textContent = originalText;
+                lucide.createIcons();
+            }, 2000);
         });
-        
-        if (!response.ok) {
-            throw new Error(`Erro ${response.status}: ${response.statusText}`);
+    }
+
+    function explainMore(btn) {
+        appendUserMessage('Pode explicar mais sobre isso?');
+        appendBotMessage('Claro! Vou detalhar melhor esta análise...\n\nEsta é uma explicação mais detalhada sobre o ponto mencionado anteriormente.');
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    async function sendScript() {
+        const script = scriptEl.value.trim();
+        if (!script) return;
+
+        appendUserMessage(script);
+        btn.disabled = true;
+        scriptEl.value = '';
+        scriptEl.style.height = 'auto';
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ script })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Erro ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            // Mensagem única consolidada com toda a análise
+            appendBotMessage(data.analysis);
+            
+        } catch (err) {
+            console.error('Erro na requisição:', err);
+            
+            // Mostrar exemplo de análise estruturada em caso de erro de conexão
+            appendBotMessage(`⚠️ Servidor não conectado. Exibindo análise de exemplo:\n\nanalise-exemplo`);
+        } finally {
+            btn.disabled = false;
+            scriptEl.focus();
         }
-        
-        const data = await response.json();
-        
-        // Mensagem única consolidada com toda a análise
-        appendBotMessage(data.analysis);
-        
-    } catch (err) {
-        console.error('Erro na requisição:', err);
-        
-        // Mostrar exemplo de análise estruturada em caso de erro de conexão
-        appendBotMessage(`⚠️ Servidor não conectado. Exibindo análise de exemplo:\n\nanalise-exemplo`);
-    } finally {
-        btn.disabled = false;
-        scriptEl.focus();
     }
-}
 
-// Event listeners
-scriptEl.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendScript();
-    }
-});
+    // Event listeners
+    scriptEl.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendScript();
+        }
+    });
 
-btn.addEventListener('click', sendScript);
+    btn.addEventListener('click', sendScript);
 
-// Focar no input ao carregar
-scriptEl.focus();
-</script>
+    // Focar no input ao carregar
+    scriptEl.focus();
+    </script>
 
-</body>
-</html>
+    </body>
+    </html>
