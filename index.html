@@ -16,7 +16,7 @@
 :root {
     /* Brand */
     --primary: #2563eb;
-    --primary-hover: #1d4ed8;
+    --primary-hover: #0044ff;
     --secondary: #64748b;
     --accent: #38bdf8;
 
@@ -27,7 +27,7 @@
     --bg-bot: #0f172a;
     --bg-user: #2563eb;
 
-    /* Text */
+    /* Text */  
     --text-primary: #f8fafc;
     --text-secondary: #a1acc2;
 
@@ -191,7 +191,7 @@ header {
 .message-content {
     flex: 1;
     min-width: 0;
-    max-width: 100%;
+    max-width: 75ch;
 }
 
 .message-header {
@@ -689,102 +689,242 @@ header {
     font-size: 12px;
     color: var(--text-secondary);
 }
+/* ===========================
+   MOBILE FIRST (default)
+   =========================== */
 
-/* Responsive Design */
+/* Corrige scroll no mobile */
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    overflow: hidden;
+}
+
+.container {
+    height: 100dvh; /* viewport real no mobile */
+}
+
+/* Header compacto */
+header {
+    padding: 10px 12px;
+}
+
+.header-title h1 {
+    font-size: 16px;
+}
+
+.header-subtitle {
+    display: none;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+}
+
+/* Chat ocupa tudo */
+#chat {
+    padding: 12px;
+    gap: 12px;
+}
+
+/* Mensagens */
+.message-wrapper {
+    gap: 8px;
+}
+
+.message-avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+}
+
+.message-content {
+    max-width: 100%;
+}
+
+/* Balões mais compactos */
+.message-body {
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 10px;
+}
+
+/* Código nunca estoura */
+.message-body pre,
+.issue-code {
+    max-width: 100%;
+    overflow-x: auto;
+    font-size: 12px;
+}
+
+/* Actions empilhadas */
+.message-actions {
+    gap: 4px;
+}
+
+.action-btn {
+    font-size: 11px;
+    padding: 6px 8px;
+}
+
+/* Input fixo no fundo (teclado mobile) */
+.input-container {
+    padding: 8px;
+}
+
+.input-wrapper {
+    width: 100%;
+    border-radius: 14px;
+}
+
+#script {
+    font-size: 14px;
+    padding: 10px 12px;
+    max-height: 140px;
+}
+
+/* Botão grande para touch */
+#sendBtn {
+    width: 44px;
+    height: 44px;
+}
+
+/* Welcome */
+.welcome h2 {
+    font-size: 20px;
+}
+
+.welcome p {
+    font-size: 13px;
+}
+
+/* Sugestões sempre 1 coluna no mobile */
+.suggestions {
+    grid-template-columns: 1fr;
+}
+
+/* ===========================
+   TABLET (>= 640px)
+   =========================== */
 @media (min-width: 640px) {
+
     header {
         padding: 16px 24px;
     }
-    
+
     .header-title h1 {
         font-size: 20px;
     }
-    
+
     .header-subtitle {
         display: block;
         font-size: 12px;
     }
-    
+
     #chat {
         padding: 24px;
-        gap: 24px;
+        gap: 20px;
     }
-    
-    .message-wrapper {
-        gap: 16px;
-    }
-    
+
     .message-avatar {
         width: 36px;
         height: 36px;
     }
-    
-    .message-author {
-        font-size: 14px;
-    }
-    
-    .message-time {
-        font-size: 12px;
-    }
-    
+
     .message-body {
         padding: 16px 20px;
-    }
-    
-    .input-container {
-        padding: 20px 24px;
-    }
-    
-    .input-hint {
-        font-size: 12px;
-    }
-    
-    .welcome {
-        padding: 40px;
-    }
-    
-    .welcome-icon {
-        width: 80px;
-        height: 80px;
-        border-radius: 20px;
-        margin-bottom: 24px;
-    }
-    
-    .welcome h2 {
-        font-size: 32px;
-    }
-    
-    .welcome p {
-        font-size: 16px;
-    }
-    
-    .suggestions {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        margin-top: 32px;
-    }
-    
-    .suggestion-card {
-        padding: 16px;
-    }
-    
-    .suggestion-title {
         font-size: 15px;
     }
-    
-    .suggestion-desc {
-        font-size: 13px;
+
+    .suggestions {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     }
 }
 
-@media (max-width: 639px) {
-    .message-content {
-        max-width: calc(100vw - 80px);
+/* ===========================
+   DESKTOP (>= 1024px)
+   =========================== */
+@media (min-width: 1024px) {
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
     }
-    
-    .suggestions {
-        grid-template-columns: 1fr;
+
+    .message-content {
+        max-width: 75ch;
+    }
+
+    .input-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
     }
 }
+/* ===========================
+   FIX OVERFLOW MENSAGENS (MOBILE)
+   =========================== */
+
+@media (max-width: 639px) {
+
+    /* Impede qualquer overflow horizontal */
+    body,
+    .container,
+    #chat {
+        overflow-x: hidden;
+    }
+
+    /* Wrapper nunca passa da tela */
+    .message-wrapper {
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    /* Conteúdo respeita viewport real */
+    .message-content {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    /* Balão NÃO pode crescer além da tela */
+    .message-body {
+        max-width: 100%;
+        width: fit-content;
+        max-width: calc(100vw - 72px); /* avatar + padding */
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    /* Código é sempre contido */
+    .message-body pre,
+    .message-body code,
+    .issue-code {
+        max-width: 100%;
+        overflow-x: auto;
+        white-space: pre;
+        word-break: normal;
+        box-sizing: border-box;
+    }
+
+    /* Usuário e bot tratados igualmente */
+    .message-wrapper.user .message-body,
+    .message-wrapper.bot .message-body {
+        max-width: calc(100vw - 72px);
+    }
+
+    /* Remove qualquer cálculo perigoso anterior */
+    .message-content {
+        max-width: unset !important;
+    }
+}
+
+
+
+
+
 </style>
 </head>
 <body>
